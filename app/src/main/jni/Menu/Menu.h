@@ -1,10 +1,6 @@
 #pragma once
-#include <dlfcn.h>
-#include <cstdint>
-#include <unistd.h>
+#include <jni.h>
 
-inline uintptr_t GetAddress(const char* libName) {
-    void* handle = dlopen(libName, RTLD_LAZY);
-    if (!handle) return 0;
-    return (uintptr_t)handle;
-}
+void MakeMenu();
+void AddToggle(const char* name, bool* value);
+void AddCategory(const char* name);
