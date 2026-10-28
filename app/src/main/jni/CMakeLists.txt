@@ -10,19 +10,14 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/ImGui/backends
 )
 
-file(GLOB_RECURSE SRC "*.cpp" "Menu/*.cpp")
+# Aqui a gente diz pra compilar o Menu.cpp e os arquivos da ImGui, e ignorar o resto
+file(GLOB IMGUI_SRC "ImGui/*.cpp")
+set(SRC_LIST "Menu/Menu.cpp" ${IMGUI_SRC})
 
-add_library(Menu SHARED ${SRC})
+add_library(Menu SHARED ${SRC_LIST})
 
 find_library(log-lib log)
 find_library(android-lib android)
 find_library(GLESv2-lib GLESv2)
 
-target_link_libraries(Menu
-    ${log-lib}
-    ${android-lib}
-    ${GLESv2-lib}
-    dl
-    z
-    m
-)
+target_link_libraries(Menu ${log-lib} ${android-lib} ${GLESv2-lib} dl z m)
