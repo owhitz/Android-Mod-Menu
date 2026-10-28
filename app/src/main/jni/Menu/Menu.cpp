@@ -3,7 +3,7 @@
 #include <pthread.h>
 #include <unistd.h>
 #include <dlfcn.h>
-#include "Includes/Utils.hpp"
+#include "Menu.h"
 
 uintptr_t libBase = 0;
 #define OFF_LOCALPLAYER 0xD7E8
@@ -31,35 +31,22 @@ void* CheatLoop(void* arg) {
     return NULL;
 }
 
-// Essa função é chamada quando você mexe nos botões do menu
-extern "C" void Changes(JNIEnv *env, jclass clazz, jobject obj, jint featNum, jstring featName, jint value, jlong Lvalue, jboolean boolean, jstring text) {
-    switch (featNum) {
-        case 0: aimbotEnabled = boolean; break;
-        case 1: espEnabled = boolean; break;
-        case 2: ammoEnabled = boolean; break;
-        case 3: godmodeEnabled = boolean; break;
-    }
-}
-
-// Essa função desenha os botões no menu
-extern "C" jobjectArray GetFeatureList(JNIEnv *env, jobject context) {
-    jobjectArray ret;
-    const char *features[] = {
-        "Toggle_Aimbot",
-        "Toggle_ESP",
-        "Toggle_Munição Infinita",
-        "Toggle_God Mode"
-    };
-    int Total_Feature = (sizeof features / sizeof features[0]);
-    ret = (jobjectArray) env->NewObjectArray(Total_Feature, env->FindClass("java/lang/String"), env->NewStringUTF(""));
-    for (int i = 0; i < Total_Feature; i++) env->SetObjectArrayElement(ret, i, env->NewStringUTF(features[i]));
-    return (ret);
+void MakeMenu() {
+    AddCategory("COUNTER FLAME MOBILE");
+    AddToggle("Aimbot", &aimbotEnabled);
+    AddToggle("ESP", &espEnabled);
+    AddToggle("Munição Infinita", &ammoEnabled);
+    AddToggle("God Mode", &godmodeEnabled);
 }
 
 void* MainThread(void* arg) {
     do {
         sleep(1);
-        libBase = (uintptr_t)getAbsoluteAddress("libil2cpp.so", 0);
+        // Puxa a biblioteca direto, sem depender do Utils.hpp
+        void* handle = dlopen("libil2cpp.so", RTLD_LAZY);
+        if (handle) {
+            libBase = (uintptr_t)handle;
+        }
     } while (libBase == 0);
 
     pthread_t cheatThread;
