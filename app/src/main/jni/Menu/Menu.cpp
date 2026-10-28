@@ -3,7 +3,7 @@
 #include <pthread.h>
 #include <unistd.h>
 #include <dlfcn.h>
-#include "Menu.h"
+#include "Menu.hpp"
 
 uintptr_t libBase = 0;
 #define OFF_LOCALPLAYER 0xD7E8
