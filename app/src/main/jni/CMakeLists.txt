@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10.2)
 project(Menu)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -fvisibility=hidden -fexceptions -frtti")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -fvisibility=hidden -fexceptions -frtti-Wno-error=format-security-Wno-format-security")
 
 include_directories(
     ${CMAKE_SOURCE_DIR}
