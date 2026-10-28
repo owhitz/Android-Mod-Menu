@@ -1,4 +1,4 @@
-name: Build libMenu.so
+name: Build Android Mod Menu
 
 on:
   push:
@@ -6,10 +6,16 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-cpp:
+  build:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
 
     - name: Setup Android NDK
       uses: nttld/setup-ndk@v1
@@ -17,16 +23,16 @@ jobs:
       with:
         ndk-version: r25b
 
-    - name: Compile C++ with CMake
-      env:
-        NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
-      run: |
-        cd app/src/main/jni
-        cmake -DCMAKE_TOOLCHAIN_FILE=$NDK_HOME/build/cmake/android.toolchain.cmake -DANDROID_ABI=arm64-v8a -DANDROID_PLATFORM=android-21 -S . -B build
-        cmake --build build -j4
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
 
-    - name: Upload libMenu.so
+    - name: Build with Gradle
+      run: ./gradlew assembleRelease
+      env:
+        ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
+
+    - name: Find and Upload libMenu.so
       uses: actions/upload-artifact@v4
       with:
         name: libMenu
-        path: app/src/main/jni/build/**/*.so
+        path: "**/libMenu.so"
